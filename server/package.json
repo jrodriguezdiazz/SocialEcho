@@ -4,7 +4,9 @@
   "description": "A social networking platform",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "start": "nodemon app.js",
     "production": "node app.js"
   },
@@ -39,7 +41,7 @@
   "devDependencies": {
     "eslint": "^8.2.0",
     "husky": "^7.0.4",
-    "jest": "^27.4.5",
+    "jest": "^29.7.0",
     "nodemon": "^2.0.20",
     "prettier": "2.8.7"
   }

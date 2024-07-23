@@ -1,0 +1,27 @@
+module.exports = {
+  testEnvironment: 'node',
+  collectCoverageFrom: ['**/*.{js,jsx,mjs,ts,tsx}'],
+  testMatch: ['**/__tests__/**/*.js?(x)', '**/?(*.)+(spec|test).js?(x)'],
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov'],
+  moduleNameMapper: {
+    '\\.(css|less|scss|sss|styl)$': '<rootDir>/node_modules/jest-css-modules',
+  },
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/__tests__/',
+    '/dev-helpers/',
+    '<rootDir>/next.config.mjs',
+    '<rootDir>/jest.config.js',
+    '/.github/',
+    '/.config/',
+    '/.next/',
+    '/lib/PropTypes/',
+    '/coverage/',
+  ],
+  moduleFileExtensions: ['js', 'jsx', 'json'],
+  setupFilesAfterEnv: ['<rootDir>/__test__/jest-setup.js'],
+  testPathIgnorePatterns: ['/node_modules/', 'setupEnv', 'jest-setup'],
+  transformIgnorePatterns: [],
+};
