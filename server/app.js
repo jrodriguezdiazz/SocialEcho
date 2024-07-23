@@ -71,4 +71,8 @@ process.on("SIGINT", async () => {
   }
 });
 
-app.listen(PORT, () => console.log(`Server up and running on port ${PORT}!`));
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => console.log(`Server up and running on port ${PORT}!`));
+}
+
+module.exports = app;
