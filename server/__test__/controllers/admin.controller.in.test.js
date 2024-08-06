@@ -2,6 +2,7 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../app');
 const Community = require('../../models/community.model');
+const Config = require('../../models/config.model');
 const jwt = require('jsonwebtoken');
 
 
@@ -83,5 +84,51 @@ describe('Integration Test - Admin Controller - addModerator', () => {
 
     expect(response.status).toBe(500);
     expect(response.body.message).toBe('Error adding moderator');
+  });
+});
+
+
+describe('Integration Test - Admin Controller - updateServicePreference', () => {
+  beforeEach(async () => {
+    await Config.deleteMany({});
+
+    const config = new Config({
+      usePerspectiveAPI: false,
+      categoryFilteringServiceProvider: 'disabled',
+      categoryFilteringRequestTimeout: 30000,
+    });
+    await config.save();
+  });
+
+  it('should update the config and return the updated config', async () => {
+    const response = await request(app)
+      .put('/admin/preferences')
+      .send({
+        usePerspectiveAPI: true,
+        categoryFilteringServiceProvider: 'TextRazor',
+        categoryFilteringRequestTimeout: 45000,
+      })
+      .set('Authorization', `Bearer ${jwt.sign({ id: '66a006fa258652aa7e4095e8' }, process.env.SECRET)}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.usePerspectiveAPI).toBe(true);
+    expect(response.body.categoryFilteringServiceProvider).toBe('TextRazor');
+    expect(response.body.categoryFilteringRequestTimeout).toBe(45000);
+  });
+
+  it('should handle errors and return a 500 status code', async () => {
+    jest.spyOn(Config, 'findOneAndUpdate').mockRejectedValueOnce(new Error('Server error'));
+
+    const response = await request(app)
+      .put('/admin/preferences')
+      .send({
+        usePerspectiveAPI: true,
+        categoryFilteringServiceProvider: 'TextRazor',
+        categoryFilteringRequestTimeout: 45000,
+      })
+      .set('Authorization', `Bearer ${jwt.sign({ id: '66a006fa258652aa7e4095e8' }, process.env.SECRET)}`);
+
+    expect(response.status).toBe(500);
+    expect(response.body.message).toBe('Error updating system preferences');
   });
 });

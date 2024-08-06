@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 const Community = require('../../models/community.model');
-const { addModerator } = require('../../controllers/admin.controller');
+const Config = require('../../models/config.model');
 
+const { addModerator } = require('../../controllers/admin.controller');
+const { updateServicePreference } = require('../../controllers/admin.controller');
+
+jest.mock('../../models/config.model');
 jest.mock('../../models/community.model');
 
 describe('Admin Controller - addModerator', () => {
@@ -70,5 +74,53 @@ describe('Admin Controller - addModerator', () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ message: 'Error adding moderator' });
+  });
+});
+
+describe('Admin Controller - updateServicePreference', () => {
+  let req, res;
+
+  beforeEach(() => {
+    req = {
+      body: {
+        usePerspectiveAPI: true,
+        categoryFilteringServiceProvider: 'TextRazor',
+        categoryFilteringRequestTimeout: 45000,
+      },
+    };
+
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should update the config and return the updated config', async () => {
+    const mockConfig = new Config({
+      usePerspectiveAPI: true,
+      categoryFilteringServiceProvider: 'TextRazor',
+      categoryFilteringRequestTimeout: 45000,
+    });
+
+    Config.findOneAndUpdate.mockResolvedValue(mockConfig);
+
+    await updateServicePreference(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(mockConfig);
+  });
+
+  it('should handle errors and return a 500 status code', async () => {
+    const error = new Error('Something went wrong');
+    Config.findOneAndUpdate.mockRejectedValue(error);
+
+    await updateServicePreference(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Error updating system preferences' });
   });
 });
