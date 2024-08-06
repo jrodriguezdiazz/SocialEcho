@@ -1,0 +1,20 @@
+config:
+  target: 'http://localhost:4000'  # Cambia a tu URL del servidor
+  phases:
+    - duration: 60
+      arrivalRate: 10  # 10 nuevas solicitudes por segundo
+  defaults:
+    headers:
+      authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjI2MTNiMzgyZjZkNTkzMTNhYWVmZCIsImlhdCI6MTcyMjk2OTI3NX0.fKP6SB1aZ86TEqSGr9K5QWRu6K1Ag4HtNwbuDpZJxS8"  # Asegúrate de incluir un token JWT válido aquí
+    http:
+      timeout: 0.1  # Tiempo de espera en segundos
+  ensure:
+    maxErrorRate: 0  # Detener si la tasa de error es mayor al 1%
+
+scenarios:
+  - flow:
+      - get:
+          url: '/admin/logs'
+          expect:
+            - statusCode: 200
+            - contentType: json
