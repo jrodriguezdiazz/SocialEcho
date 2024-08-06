@@ -32,7 +32,7 @@ describe('Integration Test - Admin Controller - addModerator', () => {
         communityId: mongoose.Types.ObjectId().toString(),
         moderatorId: moderatorId.toString(),
       })
-      .set('Authorization', `Bearer ${jwt.sign({ id: '66a006fa258652aa7e4095e8' }, process.env.SECRET)}`);
+      .set('Authorization', `Bearer ${jwt.sign({ id: '66b2613b382f6d59313aaefd' }, process.env.SECRET)}`);
 
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('Community not found');
@@ -48,7 +48,7 @@ describe('Integration Test - Admin Controller - addModerator', () => {
         communityId: communityId.toString(),
         moderatorId: moderatorId.toString(),
       })
-      .set('Authorization', `Bearer ${jwt.sign({ id: '66a006fa258652aa7e4095e8' }, process.env.SECRET)}`);
+      .set('Authorization', `Bearer ${jwt.sign({ id: '66b2613b382f6d59313aaefd' }, process.env.SECRET)}`);
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe('Already a moderator');
@@ -61,7 +61,7 @@ describe('Integration Test - Admin Controller - addModerator', () => {
         communityId: communityId.toString(),
         moderatorId: moderatorId.toString(),
       })
-      .set('Authorization', `Bearer ${jwt.sign({ id: '66a006fa258652aa7e4095e8' }, process.env.SECRET)}`);
+      .set('Authorization', `Bearer ${jwt.sign({ id: '66b2613b382f6d59313aaefd' }, process.env.SECRET)}`);
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Moderator added');
@@ -80,7 +80,7 @@ describe('Integration Test - Admin Controller - addModerator', () => {
         communityId: communityId.toString(),
         moderatorId: moderatorId.toString(),
       })
-      .set('Authorization', `Bearer ${jwt.sign({ id: '66a006fa258652aa7e4095e8' }, process.env.SECRET)}`);
+      .set('Authorization', `Bearer ${jwt.sign({ id: '66b2613b382f6d59313aaefd' }, process.env.SECRET)}`);
 
     expect(response.status).toBe(500);
     expect(response.body.message).toBe('Error adding moderator');
@@ -108,7 +108,7 @@ describe('Integration Test - Admin Controller - updateServicePreference', () => 
         categoryFilteringServiceProvider: 'TextRazor',
         categoryFilteringRequestTimeout: 45000,
       })
-      .set('Authorization', `Bearer ${jwt.sign({ id: '66a006fa258652aa7e4095e8' }, process.env.SECRET)}`);
+      .set('Authorization', `Bearer ${jwt.sign({ id: '66b2613b382f6d59313aaefd' }, process.env.SECRET)}`);
 
     expect(response.status).toBe(200);
     expect(response.body.usePerspectiveAPI).toBe(true);
@@ -126,7 +126,7 @@ describe('Integration Test - Admin Controller - updateServicePreference', () => 
         categoryFilteringServiceProvider: 'TextRazor',
         categoryFilteringRequestTimeout: 45000,
       })
-      .set('Authorization', `Bearer ${jwt.sign({ id: '66a006fa258652aa7e4095e8' }, process.env.SECRET)}`);
+      .set('Authorization', `Bearer ${jwt.sign({ id: '66b2613b382f6d59313aaefd' }, process.env.SECRET)}`);
 
     expect(response.status).toBe(500);
     expect(response.body.message).toBe('Error updating system preferences');

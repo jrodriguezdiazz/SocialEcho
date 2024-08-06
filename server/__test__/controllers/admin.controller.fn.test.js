@@ -1,12 +1,20 @@
 const mongoose = require('mongoose');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const Community = require('../../models/community.model');
 const Config = require('../../models/config.model');
+const Admin = require("../../models/admin.model");
 
 const { addModerator } = require('../../controllers/admin.controller');
 const { updateServicePreference } = require('../../controllers/admin.controller');
+const { signin } = require("../../controllers/admin.controller");
+
 
 jest.mock('../../models/config.model');
 jest.mock('../../models/community.model');
+jest.mock("../../models/admin.model");
+jest.mock("bcrypt");
+jest.mock("jsonwebtoken");
 
 describe('Admin Controller - addModerator', () => {
   let req, res, next;
@@ -122,5 +130,69 @@ describe('Admin Controller - updateServicePreference', () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ message: 'Error updating system preferences' });
+  });
+});
+
+describe("Admin Controller - signin", () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    req = {
+      body: {
+        username: "admin",
+        password: "admin123",
+      },
+    };
+
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    next = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should return 404 if username is not found", async () => {
+    Admin.findOne.mockResolvedValue(null);
+
+    await signin(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ message: "Invalid credentials" });
+  });
+
+  it("should return 400 if password is incorrect", async () => {
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+    Admin.findOne.mockResolvedValue({ username: "admin", password: hashedPassword });
+    bcrypt.compare.mockResolvedValue(false);
+
+    await signin(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ message: "Invalid credentials" });
+  });
+
+  it("should authenticate the admin and return 200 with token", async () => {
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+    Admin.findOne.mockResolvedValue({ _id: mongoose.Types.ObjectId(), username: "admin", password: hashedPassword });
+    bcrypt.compare.mockResolvedValue(true);
+    jwt.sign.mockReturnValue("test_token");
+
+    await signin(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it("should return 500 if there is a server error", async () => {
+    Admin.findOne.mockRejectedValue(new Error("Server error"));
+
+    await signin(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ message: "Something went wrong" });
   });
 });
