@@ -1,6 +1,9 @@
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const User = require('../../models/user.model');
 const { addUser } = require('../../controllers/user.controller');
+const { updateInfo } = require('../../controllers/user.controller');
+
 jest.mock('../../models/user.model');
 jest.mock('bcrypt');
 
@@ -116,5 +119,65 @@ describe('user.controller.js', () => {
       const newUser = User.mock.lastCall[0]
       expect(newUser.role).toBe('general');
     });
+  });
+});
+
+describe('User Controller - updateInfo', () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    req = {
+      userId: mongoose.Types.ObjectId().toString(),
+      body: {
+        location: 'New York',
+        interests: 'coding, music',
+        bio: 'Software developer'
+      }
+    };
+
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+
+    next = jest.fn();
+  });
+
+  it('should return 404 if user is not found', async () => {
+    User.findById.mockResolvedValue(null);
+
+    await updateInfo(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ message: 'User not found' });
+  });
+
+  it('should update user info and return 200', async () => {
+    const mockUser = {
+      save: jest.fn(),
+      location: '',
+      interests: '',
+      bio: ''
+    };
+
+    User.findById.mockResolvedValue(mockUser);
+
+    await updateInfo(req, res, next);
+
+    expect(mockUser.location).toBe('New York');
+    expect(mockUser.interests).toBe('coding, music');
+    expect(mockUser.bio).toBe('Software developer');
+    expect(mockUser.save).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ message: 'User info updated successfully' });
+  });
+
+  it('should return 500 if there is a server error', async () => {
+    User.findById.mockRejectedValue(new Error('Server error'));
+
+    await updateInfo(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Error updating user info' });
   });
 });
