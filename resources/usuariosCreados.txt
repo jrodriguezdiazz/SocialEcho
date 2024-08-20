@@ -1,0 +1,24 @@
+USUARIOS.
+#Default: AnthonyTineo
+user: anthonytineocabreja3@gmail.com
+password: Anthony08
+
+#1
+user: qa01@gmail.com
+password: qa123456
+
+#2
+user: qa02@gmail.com
+password: qa123456
+
+#3
+user: qa03@gmail.com
+password: qa123456
+
+#4
+user: qa04@gmail.com
+password: qa123456
+
+#5
+user: qa05@gmail.com
+password: qa123456
